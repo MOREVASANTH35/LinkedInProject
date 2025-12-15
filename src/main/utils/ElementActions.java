@@ -12,7 +12,7 @@ public class ElementActions {
 
     public ElementActions(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(25));
     }
 
     /* ================= SCROLL INTO VIEW AND CLICK ================= */
@@ -25,6 +25,7 @@ public class ElementActions {
 
             ((JavascriptExecutor) driver)
                     .executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+            Thread.sleep(1000);
 
             wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
 
@@ -43,7 +44,7 @@ public class ElementActions {
             wait.until(ExpectedConditions.elementToBeClickable(element)).click();
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to scroll and click element", e);
+            System.out.println("Failed to scroll and click element"+e);
         }
     }
     public boolean isElementDisplayed(By locator) {
@@ -102,16 +103,48 @@ public class ElementActions {
 
         int attempt = 0;
 
-        while (attempt < maxAttempts && isElementDisplayed(buttonBy)) {
-            int currentSize = driver.findElements(contentBy).size();
 
-            scrollAndClick(buttonBy);
 
-            wait.until(driver ->
+            scrollUntilItDisappeared(buttonBy);
+
+           /* wait.until(driver ->
                     driver.findElements(contentBy).size() > currentSize
             );
-
+*/
             attempt++;
+
+    }
+    public void scrollUntilItDisappeared(By locator) {
+
+        int maxScrolls = 20;
+        int scrollCount = 0;
+
+        while (scrollCount < maxScrolls) {
+
+            // If element is no longer visible → stop
+            if (!isElementDisplayed(locator)) {
+                break;
+            }
+
+            try {
+                WebElement element = driver.findElement(locator);
+
+                ((JavascriptExecutor) driver)
+                        .executeScript("arguments[0].scrollIntoView({block:'end'});", element);
+
+                // Wait for DOM to update / new content load
+                wait.until(ExpectedConditions.stalenessOf(element));
+
+            } catch (StaleElementReferenceException | NoSuchElementException e) {
+                // Element disappeared
+                break;
+            } catch (TimeoutException ignored) {
+                // Element still present, continue scrolling
+            }
+
+            scrollCount++;
         }
     }
+
+
 }

@@ -16,8 +16,8 @@ public class PostLikeTest {
     WebDriver driver;
     String csvPath = "src/test/resources/testdata/users.csv";
     ElementActions actions;
-    By showMoreBy = By.xpath("//span[text()='Show more results']");
-    By likedUsersBy = By.xpath("//div[@class='artdeco-entity-lockup__title ember-view']/span/span");
+    By showMoreBy = By.xpath("//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']");
+    By likedUsersBy = By.xpath("//div[@class='artdeco-entity-lockup__title ember-view']");
     List<String> likedUserList;
 
     @BeforeClass
@@ -45,8 +45,7 @@ public class PostLikeTest {
 
             // 🔹 Generic total likes
             row.put("Total Liked", getTotalLikes());
-         //   actions.clickAndWaitForMore(showMoreBy, likedUsersBy, 10);
-            // clickShowMoreBtn();
+            actions.clickAndWaitForMore(showMoreBy, likedUsersBy, 20);
             likedUserList = getLikedUserList();
 
             // 🔹 Generic handling of dynamic columns
