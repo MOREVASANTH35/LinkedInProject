@@ -14,28 +14,20 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-public class PostLikeTest extends BaseTest {
+public class PostCommentsTest extends BaseTest {
 
-    String csvPath = "src/test/resources/testdata/userLikes.csv";
+    String csvPath = "src/test/resources/testdata/usersComments.csv";
 
-    By showMoreBy = By.xpath(
-            "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 " +
-                    "artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
-    );
+    By showMoreBy = By.xpath("//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']");
+    By commentsUsersBy = By.xpath("//span[@class='comments-comment-meta__description-title']" );
 
-    By likedUsersBy = By.xpath(
-            "//div[@class='artdeco-entity-lockup__title ember-view'] | " +
-                    "//div[@class='artdeco-entity-lockup__title ember-view']//span[1]"
-    );
+    List<String> commentsUserList;
 
-    List<String> likedUserList;
-
-    @Test(groups = {"like", "smoke"})
+    @Test(groups = {"comments", "smoke"})
     public void updateCsvGenerically() {
 
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
 
-        // 🔹 IST timestamp formatter
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
@@ -45,16 +37,16 @@ public class PostLikeTest extends BaseTest {
             driver.navigate().to(postUrl);
 
             actions.scrollAndClick(
-                    By.xpath("//*[@class='social-details-social-counts__social-proof-text']")
+                    By.xpath("(//li[@class='display-flex flex-grow-1 max-full-width']//button)[1]")
             );
 
             actions.customSleep(5);
 
-            row.put("Total Liked", getTotalLikes());
+            row.put("Total Commented", getTotalComments());
 
-            actions.scrollUntilItDisappears(showMoreBy, 20);
+            actions.scrollNTimes(10);
 
-            likedUserList = getLikedUserList();
+            commentsUserList = getCommentsUserList();
 
             int yesCount = 0;
             int totalUsers = 0;
@@ -62,7 +54,7 @@ public class PostLikeTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total Liked") ||
+                        column.equalsIgnoreCase("Total Commented") ||
                         column.equalsIgnoreCase("Liked %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
@@ -70,19 +62,19 @@ public class PostLikeTest extends BaseTest {
 
                 totalUsers++;
 
-                boolean liked = isUserLiked(column);
-                row.put(column, liked ? "YES" : "NO");
+                boolean commented = isUserCommented(column);
+                row.put(column, commented ? "YES" : "NO");
 
-                if (liked) {
+                if (commented) {
                     yesCount++;
                 }
             }
 
-            // 🔹 Calculate Liked %
-            double likedPercentage =
+            // 🔹 Calculate Commented %
+            double commentedPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("Liked %", String.format("%.2f%%", likedPercentage));
+            row.put("Liked %", String.format("%.2f%%", commentedPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
@@ -96,37 +88,38 @@ public class PostLikeTest extends BaseTest {
     }
 
 
-    private String getTotalLikes() {
+
+    private String getTotalComments() {
         return driver.findElement(
-                By.xpath("//*[@class='social-details-reactors-tab__tablist artdeco-tablist artdeco-tablist--no-wrap ember-view']//span[2]")
+                By.xpath("(//li[@class='display-flex flex-grow-1 max-full-width']//button)[1]")
         ).getText();
     }
 
-    private List<String> getLikedUserList() {
+    private List<String> getCommentsUserList() {
 
-        List<String> likedUsers = new LinkedList<>();
+        List<String> commentedUsers = new LinkedList<>();
 
         try {
-            List<WebElement> elements = driver.findElements(likedUsersBy);
+            List<WebElement> elements = driver.findElements(commentsUsersBy);
 
             for (WebElement element : elements) {
                 try {
                     String text = element.getText().trim();
                     if (!text.isEmpty()) {
-                        likedUsers.add(text.toLowerCase());
+                        commentedUsers.add(text.toLowerCase());
                     }
                 } catch (StaleElementReferenceException ignored) {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Failed to get liked user list: " + e.getMessage());
+            System.out.println("Failed to get Commented user list: " + e.getMessage());
         }
 
-        driver.findElement(By.xpath("//button[@aria-label='Dismiss']")).click();
-        return likedUsers;
+       // driver.findElement(By.xpath("//button[@aria-label='Dismiss']")).click();
+        return commentedUsers;
     }
 
-    private boolean isUserLiked(String userName) {
-        return likedUserList.contains(userName.toLowerCase());
+    private boolean isUserCommented(String userName) {
+        return commentsUserList.contains(userName.toLowerCase());
     }
 }

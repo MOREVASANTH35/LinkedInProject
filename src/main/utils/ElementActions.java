@@ -4,6 +4,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
 import java.time.Duration;
+import java.util.List;
 
 public class ElementActions {
 
@@ -99,52 +100,111 @@ public class ElementActions {
             attempt++;
         }
     }
-    public void clickAndWaitForMore(By buttonBy, By contentBy, int maxAttempts) {
-
-        int attempt = 0;
+    public void clickAndWaitForMore(By buttonBy, int maxAttempts) {
 
 
 
-            scrollUntilItDisappeared(buttonBy);
+
+         //   scrollUntilItDisappeared(buttonBy,maxAttempts);
 
            /* wait.until(driver ->
                     driver.findElements(contentBy).size() > currentSize
             );
 */
-            attempt++;
 
     }
-    public void scrollUntilItDisappeared(By locator) {
+    public void scrollUntilItDisappears(By locator, int maxScrolls) {
 
-        int maxScrolls = 20;
-        int scrollCount = 0;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
 
-        while (scrollCount < maxScrolls) {
+        for (int i = 0; i < maxScrolls; i++) {
 
-            // If element is no longer visible → stop
-            if (!isElementDisplayed(locator)) {
+            // If element is gone → stop
+            if (driver.findElements(locator).isEmpty()) {
+                System.out.println("Element disappeared after " + i + " scrolls");
                 break;
             }
 
             try {
                 WebElement element = driver.findElement(locator);
 
-                ((JavascriptExecutor) driver)
-                        .executeScript("arguments[0].scrollIntoView({block:'end'});", element);
+                js.executeScript(
+                        "arguments[0].scrollIntoView({block:'end'});", element);
 
-                // Wait for DOM to update / new content load
-                wait.until(ExpectedConditions.stalenessOf(element));
+                // Small wait for DOM update
+                Thread.sleep(800);
 
-            } catch (StaleElementReferenceException | NoSuchElementException e) {
-                // Element disappeared
+            } catch (StaleElementReferenceException e) {
+                // DOM refreshed → re-check in next iteration
+            } catch (Exception e) {
                 break;
-            } catch (TimeoutException ignored) {
-                // Element still present, continue scrolling
+            }
+        }
+
+
+    }
+    public void scrollUntilItDisappears1(By locator, int maxScrolls) {
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        for (int i = 0; i < maxScrolls; i++) {
+
+            List<WebElement> elements = driver.findElements(locator);
+
+            // Element gone OR not visible → STOP
+            if (elements.isEmpty() || !elements.get(0).isDisplayed()) {
+                System.out.println("Element disappeared at scroll: " + i);
+                break;
             }
 
-            scrollCount++;
+            js.executeScript(
+                    "arguments[0].scrollIntoView({block:'end'});", elements);
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException ignored) {}
         }
     }
 
+    public void clickUntilGone(By locator, int maxClicks) {
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        for (int i = 0; i < maxClicks; i++) {
+
+            List<WebElement> elements = driver.findElements(locator);
+
+            if (elements.isEmpty() || !elements.get(0).isDisplayed()) {
+                break;
+            }
+
+            js.executeScript("arguments[0].click();", elements.get(0));
+
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ignored) {}
+        }
+    }
+
+    public void customSleep(int sec)  {
+        try {
+            long wait=sec*1000;
+            Thread.sleep(wait);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void scrollNTimes(int number){
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        for (int i = 0; i < number; i++) {
+            js.executeScript("window.scrollBy(0,1000);");
+            customSleep(1);
+        }
+    }
+    public void scrollToElement(By locator) {
+        WebElement element = driver.findElement(locator);
+        ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+    }
 
 }
