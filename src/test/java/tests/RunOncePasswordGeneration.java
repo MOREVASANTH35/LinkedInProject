@@ -1,5 +1,3 @@
-package tests;
-
 import utils.PasswordEncryptor;
 
 public class RunOncePasswordGeneration {
