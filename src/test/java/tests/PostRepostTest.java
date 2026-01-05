@@ -17,11 +17,10 @@ public class PostRepostTest extends BaseTest {
     String csvPath = "src/test/resources/testdata/usersRepost.csv";
 
     By showMoreBy = By.xpath(
-            "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 " +
-                    "artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
+            "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
     );
     By repostUsersBy = By.xpath("//*[@class='update-components-header__text-view']//a");
-    By repostsBtn = By.xpath("(//li[@class='display-flex flex-grow-1 max-full-width']//button)[2]");
+    By repostsBtn = By.xpath("(//li[@class='display-flex flex-grow-1 max-full-width']//button)[last()]");
     List<String> repostsUserList;
 
     @Test(groups = {"like", "repost"})
@@ -36,11 +35,10 @@ public class PostRepostTest extends BaseTest {
 
             String postUrl = row.get("PostUrl");
             driver.navigate().to(postUrl);
-            row.put("Total Commented", getTotalRePosts());
+            row.put("Total RePosted", getTotalRePosts());
+            actions.customSleep(2);
             actions.scrollAndClick(repostsBtn);
-
             actions.customSleep(5);
-
 
             actions.scrollUntilItDisappears(showMoreBy,10);
 
@@ -52,8 +50,8 @@ public class PostRepostTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total Commented") ||
-                        column.equalsIgnoreCase("Liked %") ||
+                        column.equalsIgnoreCase("Total RePosted") ||
+                        column.equalsIgnoreCase("RePosted %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
                 }
@@ -69,10 +67,10 @@ public class PostRepostTest extends BaseTest {
             }
 
             // 🔹 Calculate Commented %
-            double commentedPercentage =
+            double rePostPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("Liked %", String.format("%.2f%%", commentedPercentage));
+            row.put("RePosted %", String.format("%.2f%%", rePostPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
