@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 public class PostCommentsTest extends BaseTest {
 
-    String csvPath = "src/test/resources/testdata/usersComments.csv";
+    String csvPath = "src/test/resources/testdata/userData.csv";
     String outputCsvPath = "src/test/resources/testOutput/OutputUsersComments.csv";
 
 
@@ -42,7 +42,7 @@ public class PostCommentsTest extends BaseTest {
 
             actions.customSleep(5);
 
-            row.put("Total Commented", getTotalComments());
+            row.put("Total", getTotalComments());
 
             actions.scrollNTimes(10);
 
@@ -54,8 +54,8 @@ public class PostCommentsTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total Commented") ||
-                        column.equalsIgnoreCase("Liked %") ||
+                        column.equalsIgnoreCase("Total") ||
+                        column.equalsIgnoreCase("Yes %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
                 }
@@ -74,7 +74,7 @@ public class PostCommentsTest extends BaseTest {
             double commentedPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("Liked %", String.format("%.2f%%", commentedPercentage));
+            row.put("Yes %", String.format("%.2f%%", commentedPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
