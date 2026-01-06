@@ -14,7 +14,8 @@ import java.time.format.DateTimeFormatter;
 
 public class PostLikeTest extends BaseTest {
 
-    String csvPath = "src/test/resources/testdata/userLikes.csv";
+    String csvPath = "src/test/resources/testdata/userData.csv";
+    String outputCsvPath = "src/test/resources/testOutput/OutputUserLikes.csv";
 
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 " +
@@ -30,7 +31,7 @@ public class PostLikeTest extends BaseTest {
 
     @Test(groups = {"like", "smoke"})
     public void updateCsvGenerically() {
-
+        CsvUtils.copyCsvFile(csvPath,outputCsvPath);
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
 
         // 🔹 IST timestamp formatter
@@ -48,7 +49,7 @@ public class PostLikeTest extends BaseTest {
 
             actions.customSleep(5);
 
-            row.put("Total Liked", getTotalLikes());
+            row.put("Total", getTotalLikes());
 
             actions.scrollUntilItDisappears(showMoreBy, 20);
 
@@ -60,8 +61,8 @@ public class PostLikeTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total Liked") ||
-                        column.equalsIgnoreCase("Liked %") ||
+                        column.equalsIgnoreCase("Total") ||
+                        column.equalsIgnoreCase("Yes %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
                 }
@@ -76,11 +77,11 @@ public class PostLikeTest extends BaseTest {
                 }
             }
 
-            // 🔹 Calculate Liked %
+            // 🔹 Calculate Yes %
             double likedPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("Liked %", String.format("%.2f%%", likedPercentage));
+            row.put("Yes %", String.format("%.2f%%", likedPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
@@ -90,7 +91,7 @@ public class PostLikeTest extends BaseTest {
             row.put("Executed At (IST)", istTime);
         }
 
-        CsvUtils.writeCsv(csvPath, rows);
+        CsvUtils.writeCsv(outputCsvPath, rows);
     }
 
 

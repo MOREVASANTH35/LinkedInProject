@@ -14,7 +14,8 @@ import java.util.Map;
 
 public class PostRepostTest extends BaseTest {
 
-    String csvPath = "src/test/resources/testdata/usersRepost.csv";
+    String csvPath = "src/test/resources/testdata/userData.csv";
+    String outputCsvPath = "src/test/resources/testOutput/OutputUsersRepost.csv";
 
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
@@ -25,9 +26,8 @@ public class PostRepostTest extends BaseTest {
 
     @Test(groups = {"like", "repost"})
     public void updateCsvGenerically() {
-
+        CsvUtils.copyCsvFile(csvPath,outputCsvPath);
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
-
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
@@ -35,7 +35,7 @@ public class PostRepostTest extends BaseTest {
 
             String postUrl = row.get("PostUrl");
             driver.navigate().to(postUrl);
-            row.put("Total RePosted", getTotalRePosts());
+            row.put("Total", getTotalRePosts());
             actions.customSleep(2);
             actions.scrollAndClick(repostsBtn);
             actions.customSleep(5);
@@ -50,8 +50,8 @@ public class PostRepostTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total RePosted") ||
-                        column.equalsIgnoreCase("RePosted %") ||
+                        column.equalsIgnoreCase("Total") ||
+                        column.equalsIgnoreCase("Yes %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
                 }
@@ -70,7 +70,7 @@ public class PostRepostTest extends BaseTest {
             double rePostPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("RePosted %", String.format("%.2f%%", rePostPercentage));
+            row.put("Yes %", String.format("%.2f%%", rePostPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
@@ -80,7 +80,7 @@ public class PostRepostTest extends BaseTest {
             row.put("Executed At (IST)", istTime);
         }
 
-        CsvUtils.writeCsv(csvPath, rows);
+        CsvUtils.writeCsv(outputCsvPath, rows);
     }
 
 

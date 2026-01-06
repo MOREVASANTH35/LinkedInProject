@@ -14,7 +14,9 @@ import java.time.format.DateTimeFormatter;
 
 public class PostCommentsTest extends BaseTest {
 
-    String csvPath = "src/test/resources/testdata/usersComments.csv";
+    String csvPath = "src/test/resources/testdata/userData.csv";
+    String outputCsvPath = "src/test/resources/testOutput/OutputUsersComments.csv";
+
 
     By showMoreBy = By.xpath("//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']");
     By commentsUsersBy = By.xpath("//span[@class='comments-comment-meta__description-title']" );
@@ -23,7 +25,7 @@ public class PostCommentsTest extends BaseTest {
 
     @Test(groups = {"comments", "smoke"})
     public void updateCsvGenerically() {
-
+        CsvUtils.copyCsvFile(csvPath,outputCsvPath);
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
 
         DateTimeFormatter formatter =
@@ -40,7 +42,7 @@ public class PostCommentsTest extends BaseTest {
 
             actions.customSleep(5);
 
-            row.put("Total Commented", getTotalComments());
+            row.put("Total", getTotalComments());
 
             actions.scrollNTimes(10);
 
@@ -52,8 +54,8 @@ public class PostCommentsTest extends BaseTest {
             for (String column : row.keySet()) {
 
                 if (column.equalsIgnoreCase("PostUrl") ||
-                        column.equalsIgnoreCase("Total Commented") ||
-                        column.equalsIgnoreCase("Liked %") ||
+                        column.equalsIgnoreCase("Total") ||
+                        column.equalsIgnoreCase("Yes %") ||
                         column.equalsIgnoreCase("Executed At (IST)")) {
                     continue;
                 }
@@ -72,7 +74,7 @@ public class PostCommentsTest extends BaseTest {
             double commentedPercentage =
                     totalUsers == 0 ? 0 : (yesCount * 100.0) / totalUsers;
 
-            row.put("Liked %", String.format("%.2f%%", commentedPercentage));
+            row.put("Yes %", String.format("%.2f%%", commentedPercentage));
 
             // 🔹 Add Execution Timestamp (IST) as LAST column
             String istTime = ZonedDateTime
@@ -82,7 +84,7 @@ public class PostCommentsTest extends BaseTest {
             row.put("Executed At (IST)", istTime);
         }
 
-        CsvUtils.writeCsv(csvPath, rows);
+        CsvUtils.writeCsv(outputCsvPath, rows);
     }
 
 
