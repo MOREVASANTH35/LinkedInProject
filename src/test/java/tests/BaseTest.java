@@ -1,43 +1,41 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import utils.ConfigReader;
-import utils.ElementActions;
-import utils.PasswordDecryptor;
-import utils.PopupDataExtractor;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 
 import java.time.Duration;
 
 public class BaseTest {
 
-    protected WebDriver driver;
-    protected ElementActions actions;
-    protected PopupDataExtractor popUp;
+    protected static WebDriver driver;
+    protected static utils.ElementActions actions;
+    protected static utils.PopupDataExtractor popUp;
 
-    @BeforeClass
+    @BeforeSuite
     public void baseSetup() {
 
-        driver = new ChromeDriver();
-        actions = new ElementActions(driver);
-        popUp = new PopupDataExtractor(driver);
+        if (driver == null) {   // important safety check
+            driver = new ChromeDriver();
+            driver.manage().window().maximize();
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+            actions = new utils.ElementActions(driver);
+            popUp = new utils.PopupDataExtractor(driver);
 
-        loginToLinkedIn();
+            loginToLinkedIn();
+        }
     }
 
     protected void loginToLinkedIn() {
 
-        driver.get(ConfigReader.get("app.url"));
+        driver.get(utils.ConfigReader.get("app.url"));
 
         driver.findElement(By.id("username"))
-                .sendKeys(ConfigReader.get("username"));
+                .sendKeys(utils.ConfigReader.get("username"));
 
         String decryptedPassword =
-                PasswordDecryptor.decrypt(ConfigReader.get("password"));
+                utils.PasswordDecryptor.decrypt(utils.ConfigReader.get("password"));
 
         driver.findElement(By.id("password"))
                 .sendKeys(decryptedPassword);
@@ -45,8 +43,11 @@ public class BaseTest {
         driver.findElement(By.xpath("//*[@type='submit']")).click();
     }
 
-    @AfterClass
+    @AfterSuite
     public void baseTearDown() {
-         driver.quit();
+        if (driver != null) {
+            driver.quit();
+            driver = null;
+        }
     }
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 public class PostRepostTest extends BaseTest {
 
     String csvPath = "src/test/resources/testdata/usersRepost.csv";
+    String outputCsvPath = "src/test/resources/testOutput/OutputUsersRepost.csv";
 
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
@@ -25,9 +26,8 @@ public class PostRepostTest extends BaseTest {
 
     @Test(groups = {"like", "repost"})
     public void updateCsvGenerically() {
-
+        CsvUtils.copyCsvFile(csvPath,outputCsvPath);
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
-
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
@@ -80,7 +80,7 @@ public class PostRepostTest extends BaseTest {
             row.put("Executed At (IST)", istTime);
         }
 
-        CsvUtils.writeCsv(csvPath, rows);
+        CsvUtils.writeCsv(outputCsvPath, rows);
     }
 
 

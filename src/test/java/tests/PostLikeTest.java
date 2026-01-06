@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 public class PostLikeTest extends BaseTest {
 
     String csvPath = "src/test/resources/testdata/userLikes.csv";
+    String outputCsvPath = "src/test/resources/testOutput/OutputUserLikes.csv";
 
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 " +
@@ -30,7 +31,7 @@ public class PostLikeTest extends BaseTest {
 
     @Test(groups = {"like", "smoke"})
     public void updateCsvGenerically() {
-
+        CsvUtils.copyCsvFile(csvPath,outputCsvPath);
         List<Map<String, String>> rows = CsvUtils.readCsv(csvPath);
 
         // 🔹 IST timestamp formatter
@@ -90,7 +91,7 @@ public class PostLikeTest extends BaseTest {
             row.put("Executed At (IST)", istTime);
         }
 
-        CsvUtils.writeCsv(csvPath, rows);
+        CsvUtils.writeCsv(outputCsvPath, rows);
     }
 
 

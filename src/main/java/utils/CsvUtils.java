@@ -57,4 +57,40 @@ public class CsvUtils {
             throw new RuntimeException("CSV write failed", e);
         }
     }
+    public static boolean copyCsvFile(String inputPath, String outputPath) {
+
+        File inputFile = new File(inputPath);
+        File outputFile = new File(outputPath);
+
+        // Check input file
+        if (!inputFile.exists()) {
+            System.out.println("Input file does not exist: " + inputPath);
+            return false;
+        }
+
+        // Create output directory if missing
+        File parentDir = outputFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        try (
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile))
+        ) {
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = bis.read(buffer)) != -1) {
+                bos.write(buffer, 0, length);
+            }
+
+            bos.flush(); // ensure data is written
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

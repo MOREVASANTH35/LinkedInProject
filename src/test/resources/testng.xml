@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
 <suite name="LinkedInTestsSuite" parallel="false">
 
-    <!-- Define Test 1 -->
-    <test name="PostLikeTestExecution">
+    <test name="LinkedInRegressionTests">
         <classes>
             <class name="PostLikeTest"/>
-        </classes>
-    </test>
-
-    <!-- Define Test 2 -->
-    <test name="PostCommentsTestExecution">
-        <classes>
             <class name="PostCommentsTest"/>
-        </classes>
-    </test>
-    <test name="PostRepostTestExecution">
-        <classes>
             <class name="PostRepostTest"/>
         </classes>
     </test>
-
 
 </suite>
