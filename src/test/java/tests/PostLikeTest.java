@@ -92,6 +92,7 @@ public class PostLikeTest extends BaseTest {
         }
 
         CsvUtils.writeCsv(outputCsvPath, rows);
+        HtmlReportGenerator.generateHtmlReport();
     }
 
 
