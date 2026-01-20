@@ -16,7 +16,8 @@ public class PostLikeTest extends BaseTest {
 
     String csvPath = "src/test/resources/testdata/userData.csv";
     String outputCsvPath = "src/test/resources/testOutput/OutputUserLikes.csv";
-
+    String htmlReportPath = "src/test/resources/testOutput/LikeReport.html";
+    String[] headerColumns = {"PostUrl", "Total", "Yes %", "Executed At (IST)"};
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 " +
                     "artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
@@ -92,7 +93,6 @@ public class PostLikeTest extends BaseTest {
         }
 
         CsvUtils.writeCsv(outputCsvPath, rows);
-        HtmlReportGenerator.generateHtmlReport();
     }
 
 
