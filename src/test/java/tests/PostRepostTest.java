@@ -11,12 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static utils.CsvToHtmlConverter.generateReport;
+
 
 public class PostRepostTest extends BaseTest {
 
     String csvPath = "src/test/resources/testdata/userData.csv";
     String outputCsvPath = "src/test/resources/testOutput/OutputUsersRepost.csv";
-
+    String outputHtml = "src/test/resources/testOutput/OutputUserReposts.html";
     By showMoreBy = By.xpath(
             "//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']"
     );
@@ -81,6 +83,8 @@ public class PostRepostTest extends BaseTest {
         }
 
         CsvUtils.writeCsv(outputCsvPath, rows);
+        customSleep(5);
+        generateReport(outputCsvPath, outputHtml);
     }
 
 

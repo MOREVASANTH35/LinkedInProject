@@ -11,12 +11,14 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static utils.CsvToHtmlConverter.generateReport;
+
 
 public class PostCommentsTest extends BaseTest {
 
     String csvPath = "src/test/resources/testdata/userData.csv";
     String outputCsvPath = "src/test/resources/testOutput/OutputUsersComments.csv";
-
+    String outputHtml = "src/test/resources/testOutput/OutputUserComments.html";
 
     By showMoreBy = By.xpath("//button[@class='artdeco-button artdeco-button--muted artdeco-button--1 artdeco-button--full artdeco-button--secondary ember-view scaffold-finite-scroll__load-button']");
     By commentsUsersBy = By.xpath("//span[@class='comments-comment-meta__description-title']" );
@@ -85,6 +87,8 @@ public class PostCommentsTest extends BaseTest {
         }
 
         CsvUtils.writeCsv(outputCsvPath, rows);
+        customSleep(5);
+        generateReport(outputCsvPath, outputHtml);
     }
 
 
