@@ -88,7 +88,7 @@ public class PostCommentsTest extends BaseTest {
 
         CsvUtils.writeCsv(outputCsvPath, rows);
         customSleep(5);
-        generateReport(outputCsvPath, outputHtml);
+        generateReport(outputCsvPath, outputHtml,"Comments with 'Yes %'");
     }
 
 

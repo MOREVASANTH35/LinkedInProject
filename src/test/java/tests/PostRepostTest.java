@@ -84,7 +84,7 @@ public class PostRepostTest extends BaseTest {
 
         CsvUtils.writeCsv(outputCsvPath, rows);
         customSleep(5);
-        generateReport(outputCsvPath, outputHtml);
+        generateReport(outputCsvPath, outputHtml, "Reposts Report");
     }
 
 

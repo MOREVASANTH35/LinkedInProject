@@ -8,7 +8,7 @@ public class CsvToHtmlConverter {
      * @param inputCsv path to input CSV
      * @param outputHtml path to output HTML
      */
-    public static void generateReport(String inputCsv, String outputHtml) {
+    public static void generateReport(String inputCsv, String outputHtml,String formulaText1) {
         if (inputCsv == null || inputCsv.isEmpty()) {
             throw new IllegalArgumentException("inputCsv must be provided");
         }
@@ -97,7 +97,7 @@ public class CsvToHtmlConverter {
         File parent = outFile.getParentFile();
         if (parent != null && !parent.exists()) parent.mkdirs();
         System.out.println("Generating HTML report: " + outputHtml);
-        HtmlReportGenerator.generateHtmlReport(outputHtml, tableData, headers, totalRecords, negativeCount, formulaText);
+        HtmlReportGenerator.generateHtmlReport(outputHtml, tableData, headers, totalRecords, negativeCount, formulaText1);
         System.out.println("Done. Open " + outputHtml + " in a browser to view the report.");
     }
     // Small runner that converts a CSV file into an HTML report using HtmlReportGenerator
@@ -106,6 +106,6 @@ public class CsvToHtmlConverter {
         String outputHtml = "src/test/resources/testOutput/OutputUserLikes.html";
         if (args.length >= 1) inputCsv = args[0];
         if (args.length >= 2) outputHtml = args[1];
-        generateReport(inputCsv, outputHtml);
+        generateReport(inputCsv, outputHtml,"Likes with 'Yes %'");
     }
 }
